@@ -1,82 +1,132 @@
-import Head from 'next/head'
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import { size } from 'lodash';
+import Copyright from '../src/Copyright';
+import Search from '../src/Search';
+import Circular from '../src/Circular';
+import { findProductsParameter } from './api/products';
 
-export default function Home() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+export default function Index() {
+	const [products, setProducts] = useState(null);
+	const { query } = useRouter();
 
-      <main className="flex flex-col items-center justify-center flex-1 px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
+	useEffect(
+		() => {
+			(async () => {
+				if (size(query.query) > 3) {
+					const respuesta = await findProductsParameter(query.query);
+					console.log(respuesta);
+					setProducts(respuesta || []);
+				} else {
+					setProducts([]);
+				}
+			})();
+		},
+		[query]
+	);
 
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="p-3 font-mono text-lg bg-gray-100 rounded-md">
-            pages/index.js
-          </code>
-        </p>
+	const useStyles = makeStyles((theme) => ({
+		gridContainer: {
+			paddingLeft: '30px',
+			paddingRight: '30px'
+		},
+		root: {
+			maxWidth: 345
+		},
+		media: {
+			height: 100,
+			width: '30%',
+			marginLeft: '30%'
+		},
+		margin: {
+			margin: theme.spacing(1)
+		},
+	}));
 
-        <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
-            </p>
-          </a>
+	const classes = useStyles();
 
-          <a
-            href="https://nextjs.org/learn"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
+	return (
+		<Container maxWidth="lg">
+			<Typography variant="h5" component="h2">
+				<br />
+				Walmart-Frondend
+				<br />
+				<Search />
+				<br />
+			</Typography>
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className="flex items-center justify-center w-full h-24 border-t">
-        <a
-          className="flex items-center justify-center"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="h-4 ml-2" />
-        </a>
-      </footer>
-    </div>
-  )
+			{!products && <Circular />}
+			{products &&
+				size(products) === 0 && (
+					<div>
+						<h2>No se han encontrado productos</h2>
+					</div>
+				)}
+			{size(products) > 0 && (
+				<Grid container spacing={4} className={classes.gridContainer}>
+					{!products ? null : (
+						products.map(({ id, brand, description, image, price, palindrome }) => (
+							<Grid key={id} item xs={12} sm={6} md={4}>
+								<Card className={classes.root}>
+									<CardActionArea>
+										<CardMedia className={classes.media} image={image} />
+										<CardContent>
+											<Typography gutterBottom variant="h5" component="h2">
+												<Box fontWeight="fontWeightBold">
+													{brand} - {description}
+												</Box>
+											</Typography>
+											{palindrome ? <Button size="medium">50% ${price}</Button> : <Button size="large">${price}</Button>}
+										</CardContent>
+									</CardActionArea>
+								</Card>
+							</Grid>
+						))
+					)}
+				</Grid>
+			)}
+			<Copyright />
+		</Container>
+	);
 }
+
+
+/*
+{palindrome == 1 (
+	<div>
+		<h2>Si</h2>
+	</div>
+)}
+
+<Button size="medium">50% ${price}</Button>
+<br />
+<Button size="large">${price}</Button>
+*/
+
+
+
+
+/*
+	"_id": "60572ac9433a4f7639c5444b",
+	"id": 1,
+	"brand": "ooy eqrceli",
+	"description": "rlñlw brhrka",
+	"image": "www.lider.cl/catalogo/images/whiteLineIcon.svg",
+	"price": 498724
+*/
+
+/*
+<Typography gutterBottom variant="h5" component="h2">
+	{brand}
+</Typography>
+*/
