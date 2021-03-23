@@ -100,22 +100,6 @@ export default function Index() {
 	);
 }
 
-
-/*
-{palindrome == 1 (
-	<div>
-		<h2>Si</h2>
-	</div>
-)}
-
-<Button size="medium">50% ${price}</Button>
-<br />
-<Button size="large">${price}</Button>
-*/
-
-
-
-
 /*
 	"_id": "60572ac9433a4f7639c5444b",
 	"id": 1,
@@ -125,8 +109,3 @@ export default function Index() {
 	"price": 498724
 */
 
-/*
-<Typography gutterBottom variant="h5" component="h2">
-	{brand}
-</Typography>
-*/

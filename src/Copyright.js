@@ -9,10 +9,3 @@ export default function Copyright() {
     </Typography>
   );
 }
-
-/*
-import MuiLink from '@material-ui/core/Link';
-<MuiLink color="inherit" href="https://material-ui.com/">
-        Your Website
-</MuiLink>{' '}
-*/
